@@ -1,0 +1,53 @@
+New-Item -Path C:\Demo_navinya -ItemType Directory
+
+#help syntax
+Get-DscResource -Name file -Syntax
+
+#create DSC MOF
+Configuration fileconfig_navinya
+{
+Import-DscResource -ModuleName psdesiredstateconfiguration
+Node srv-shwetank
+{
+File Create_Directory
+{
+DestinationPath = "C:\Demo\Navinya"
+Type = Directory
+
+}
+File Copy_Directory
+{
+SourcePath = "\\srv-pramod\Demo_navinya\script.ps1"
+DestinationPath = "C:\Demo\Navinya"
+}
+}
+}
+
+#start session
+Start-DscConfiguration -Path C:\Users\Administrator\fileconfig_navinya -Wait -Verbose -CimSession $cimsession -Force
+
+----------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------
+$cimsessionoption = New-CimSessionOption -SkipCACheck -SkipCNCheck -UseSsl
+
+$cimsession = New-CimSession -Credential $cred -ComputerName srv-shwetank -SessionOption $cimsessionoption -Port 5986
+
+Configuration myconfig_navinya
+{
+Import-DscResource -ModuleName psdesiredstateconfiguration
+Node srv-shwetank
+{
+Service BITS_Service
+{
+
+Name = "BITS"
+State = "Stopped"
+
+}
+}
+}
+
+Start-DscConfiguration -Path C:\Users\Administrator\myconfig_navinya -Wait -Verbose -CimSession $cimsession
+
+
