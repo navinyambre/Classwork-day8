@@ -51,3 +51,28 @@ State = "Stopped"
 Start-DscConfiguration -Path C:\Users\Administrator\myconfig_navinya -Wait -Verbose -CimSession $cimsession
 
 
+----------------------------------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------------------------------
+
+Find-Module xnetworking | Install-Module
+
+
+#create DSC MOF
+Configuration networkconfig_navinya
+{
+Import-DscResource -ModuleName xNetworking
+Node srv-shwetank
+
+{
+xHostsFile networkconfig
+    {
+    HostName = "google.com"
+    IPAddress = "192.168.1.100"
+    }    
+}
+}
+
+#start session
+Start-DscConfiguration -Path C:\Users\Administrator\networkconfig_navinya -Wait -Verbose -CimSession $cimsession -Force
+
